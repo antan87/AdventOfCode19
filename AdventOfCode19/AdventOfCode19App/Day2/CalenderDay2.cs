@@ -1,9 +1,7 @@
-﻿using AdventOfCode19App.Interface;
+﻿using AdventOfCode19App.Common;
+using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace AdventOfCode19App.Day2
@@ -23,7 +21,8 @@ namespace AdventOfCode19App.Day2
         public Task<string> Run()
         {
             List<string> messages = new List<string>();
-            var integers = this.GetTestData().AsSpan();
+            var resourceName = "AdventOfCode19App.Day2.DataSet.txt";
+            var integers = DataHelper.GetIntTestData(resourceName).AsSpan();
             for (int index = 0; index < integers.Length; index += 4)
             {
                 var chunk = GetChunk(integers, index, 4);
@@ -44,19 +43,6 @@ namespace AdventOfCode19App.Day2
         }
 
         private static Span<int> GetChunk(Span<int> array, int start, int length) => start + length > array.Length ? array.Slice(0, 0) : array.Slice(start, length);
-
-        private int[] GetTestData()
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "AdventOfCode19App.Day2.DataSet.txt";
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                string result = reader.ReadToEnd();
-                return result.Split(',').Select(number => Int32.Parse(number)).ToArray();
-            }
-        }
 
         public string Header() => "--- Day 2: 1202 Program Alarm ---";
     }

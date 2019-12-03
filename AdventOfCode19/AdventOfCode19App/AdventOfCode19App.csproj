@@ -7,10 +7,17 @@
 
   <ItemGroup>
     <None Remove="Day2\DataSet.txt" />
+    <None Remove="Day3\DataSet.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Day2\DataSet.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Day3\DataSet.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
