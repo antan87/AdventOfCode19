@@ -37,9 +37,7 @@ namespace AdventOfCode19App.Day2
 
                 var integerOne = integers[chunk[1]];
                 var integerTwo = integers[chunk[2]];
-                var position = integers[chunk[3]];
-                if (chunk.Length - 1 >= position)
-                    integers[position] = operation(integerOne, integerTwo);
+                integers[chunk[3]] = operation(integerOne, integerTwo);
             }
 
             return Task.FromResult(string.Join(',', integers.ToArray()));
