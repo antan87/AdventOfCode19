@@ -1,4 +1,5 @@
 ﻿using AdventOfCode19App.Day2;
+using AdventOfCode19App.Day3;
 using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,6 @@ namespace AdventOfCode19App
             }
         }
 
-        private List<ICalenderDay> CalenderDays { get; } = new List<ICalenderDay> { new CalenderDay2() };
+        private List<ICalenderDay> CalenderDays { get; } = new List<ICalenderDay> { new CalenderDay2(), new CalendarDay3() };
     }
 }
