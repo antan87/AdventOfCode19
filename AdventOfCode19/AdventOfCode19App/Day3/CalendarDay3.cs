@@ -21,7 +21,7 @@ namespace AdventOfCode19App.Day3
             builder.AppendLine($"Wire: {directionData}");
             var directions = GetDirections(directionData);
             (int x, int y) start = (x: 1, y: 1);
-            var coordinateSections = GetCoordinates(start, directions);
+            var coordinateSections = GetCoordinates(start, directions).ToList();
 
             builder.AppendLine();
             foreach (var coordinates in coordinateSections)
@@ -30,18 +30,26 @@ namespace AdventOfCode19App.Day3
             var firstSection = coordinateSections.First();
             var lastSection = coordinateSections.Last();
 
-            var intersections = firstSection.Intersect(lastSection);
+            var intersections = firstSection.Select(item => (item.x, item.y)).Intersect(lastSection.Select(item => (item.x, item.y)));
 
             decimal manhattanDistance = decimal.MaxValue;
+            int lowestInterSectionSteps = int.MaxValue;
             foreach (var intersection in intersections)
             {
-                var distance = GetManhattanDistance(start, intersection);
+                var distance = GetManhattanDistance(start, (intersection.x, intersection.y));
                 if (distance < manhattanDistance)
                     manhattanDistance = distance;
+
+                var firstDistance = firstSection.First(row => row.x == intersection.x && row.y == intersection.y).steps;
+                var secondDistance = lastSection.First(row => row.x == intersection.x && row.y == intersection.y).steps;
+                if (firstDistance + secondDistance < lowestInterSectionSteps)
+                    lowestInterSectionSteps = firstDistance + secondDistance;
             }
 
             builder.AppendLine();
             builder.AppendLine($"The manhattan distance is {manhattanDistance}");
+            builder.AppendLine();
+            builder.AppendLine($"The lowest steps for a intersection is {lowestInterSectionSteps}");
 
             return builder.ToString();
         }
@@ -73,19 +81,21 @@ namespace AdventOfCode19App.Day3
             }
         }
 
-        private IEnumerable<IEnumerable<(int x, int y)>> GetCoordinates((int x, int y) position, IEnumerable<IEnumerable<(string direction, int steps)>> directions)
+        private IEnumerable<IEnumerable<(int x, int y, int steps)>> GetCoordinates((int x, int y) position, IEnumerable<IEnumerable<(string direction, int steps)>> directions)
         {
             foreach (var sectionDirections in directions)
                 yield return GetCoordinates(position, sectionDirections);
 
-            IEnumerable<(int x, int y)> GetCoordinates((int x, int y) start, IEnumerable<(string direction, int steps)> directions)
+            IEnumerable<(int x, int y, int steps)> GetCoordinates((int x, int y) start, IEnumerable<(string direction, int steps)> directions)
             {
+                int stepCounter = 0;
                 foreach (var direction in directions)
                 {
                     for (int count = 0; count < direction.steps; count++)
                     {
                         Move(ref start, direction.direction);
-                        yield return start;
+                        stepCounter++;
+                        yield return (start.x, start.y, stepCounter);
                     }
                 }
             }
