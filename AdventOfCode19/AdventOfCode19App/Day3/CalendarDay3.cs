@@ -23,10 +23,6 @@ namespace AdventOfCode19App.Day3
             (int x, int y) start = (x: 1, y: 1);
             var coordinateSections = GetCoordinates(start, directions).ToList();
 
-            builder.AppendLine();
-            foreach (var coordinates in coordinateSections)
-                builder.AppendLine(string.Join(" ", coordinates));
-
             var firstSection = coordinateSections.First();
             var lastSection = coordinateSections.Last();
 

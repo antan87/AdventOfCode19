@@ -1,5 +1,4 @@
-﻿using AdventOfCode19App.Day2;
-using AdventOfCode19App.Day3;
+﻿using AdventOfCode19App.Day4;
 using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
@@ -22,9 +21,11 @@ namespace AdventOfCode19App
                 Console.WriteLine(calenderDay.Header());
                 Console.WriteLine("-----------------------------------------------------");
                 Console.WriteLine(await calenderDay.Run());
+                Console.WriteLine();
+                Console.WriteLine();
             }
         }
 
-        private List<ICalenderDay> CalenderDays { get; } = new List<ICalenderDay> { new CalenderDay2(), new CalendarDay3() };
+        private List<ICalenderDay> CalenderDays { get; } = new List<ICalenderDay> { new CalendarDay4() };
     }
 }
