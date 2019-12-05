@@ -3,14 +3,15 @@ using AdventOfCode19App.Interface;
 using System;
 using System.Threading.Tasks;
 
-namespace AdventOfCode19App.Day2
+namespace AdventOfCode19App.Day5
 {
-    public sealed class CalenderDay2 : ICalenderDay
+    public sealed class CalendarDay5 : ICalenderDay
     {
-        private static Func<int, int, int>? GetArithmeticOperation(Span<int> chunk, Span<int> array)
+        public string Header() => "--- Day 5: Sunny with a Chance of Asteroids ---";
+
+        private static Func<int, int, int>? GetArithmeticOperation(int opcode)
         {
-            int opCode = chunk[0];
-            return opCode switch
+            return opcode switch
             {
                 99 => null,
                 1 => (valueOne, valueTwo) => valueOne + valueTwo,
@@ -19,8 +20,6 @@ namespace AdventOfCode19App.Day2
         }
 
         private static Span<int> GetChunk(Span<int> array, int start, int length) => start + length > array.Length ? array.Slice(0, 0) : array.Slice(start, length);
-
-        public string Header() => "--- Day 2: 1202 Program Alarm ---";
 
         public Task<string> Run()
         {
