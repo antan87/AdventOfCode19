@@ -1,4 +1,7 @@
-﻿using AdventOfCode19App.Day4;
+﻿using AdventOfCode19App.Day2;
+using AdventOfCode19App.Day3;
+using AdventOfCode19App.Day4;
+using AdventOfCode19App.Day5;
 using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
@@ -10,7 +13,14 @@ namespace AdventOfCode19App
     {
         public static async Task Main(string[] args)
         {
-            await new Program().Run();
+            try
+            {
+                await new Program().Run();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public async Task Run()
@@ -26,6 +36,12 @@ namespace AdventOfCode19App
             }
         }
 
-        private List<ICalenderDay> CalenderDays { get; } = new List<ICalenderDay> { new CalendarDay4() };
+        private List<ICalenderDay> CalenderDays { get; } = new List<ICalenderDay>
+        {
+            new CalendarDay2(),
+            new CalendarDay3(),
+            new CalendarDay4(),
+            new CalendarDay5()
+        };
     }
 }
