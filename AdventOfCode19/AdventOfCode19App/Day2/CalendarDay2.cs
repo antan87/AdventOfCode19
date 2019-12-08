@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace AdventOfCode19App.Day2
 {
-    public sealed class CalenderDay2 : ICalenderDay
+    public sealed class CalendarDay2 : ICalenderDay
     {
-        private static Func<int, int, int>? GetArithmeticOperation(Span<int> chunk, Span<int> array)
+        private static Func<int, int, int>? GetArithmeticOperation(int opCode)
         {
-            int opCode = chunk[0];
             return opCode switch
             {
                 99 => null,
@@ -26,6 +25,7 @@ namespace AdventOfCode19App.Day2
         {
             var resourceName = "AdventOfCode19App.Day2.DataSet.txt";
             var integers = DataHelper.GetIntTestData(resourceName).AsSpan();
+            RunOperation(integers);
 
             return Task.FromResult(string.Join(',', integers.ToArray()));
         }
@@ -39,7 +39,7 @@ namespace AdventOfCode19App.Day2
                     break;
 
                 var opcode = chunk[0];
-                var operation = GetArithmeticOperation(chunk[0]);
+                var operation = GetArithmeticOperation(opcode);
                 if (operation == null)
                     break;
 

@@ -18,7 +18,7 @@ namespace XUnitTest.Day2
 
             foreach (var data in testData)
             {
-                CalenderDay2.RunOperation(data.numbers);
+                CalendarDay2.RunOperation(data.numbers);
 
                 Assert.Equal(data.expected, data.numbers);
             }

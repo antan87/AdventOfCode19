@@ -13,7 +13,14 @@ namespace AdventOfCode19App
     {
         public static async Task Main(string[] args)
         {
-            await new Program().Run();
+            try
+            {
+                await new Program().Run();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public async Task Run()
@@ -31,7 +38,7 @@ namespace AdventOfCode19App
 
         private List<ICalenderDay> CalenderDays { get; } = new List<ICalenderDay>
         {
-            new CalenderDay2(),
+            new CalendarDay2(),
             new CalendarDay3(),
             new CalendarDay4(),
             new CalendarDay5()
