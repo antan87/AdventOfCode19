@@ -2,6 +2,7 @@
 using AdventOfCode19App.Day3;
 using AdventOfCode19App.Day4;
 using AdventOfCode19App.Day5;
+using AdventOfCode19App.Day6;
 using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,8 @@ namespace AdventOfCode19App
             new CalendarDay2(),
             new CalendarDay3(),
             new CalendarDay4(),
-            new CalendarDay5()
+            new CalendarDay5(),
+            new CalendarDay6(),
         };
     }
 }

@@ -23,7 +23,7 @@ namespace AdventOfCode19App.Day2
 
         public Task<string> Run()
         {
-            var resourceName = "AdventOfCode19App.Day2.DataSet.txt";
+            var resourceName = "AdventOfCode19App.Day2.Dataset.txt";
             var integers = DataHelper.GetIntTestData(resourceName).AsSpan();
             RunOperation(integers);
 

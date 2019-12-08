@@ -14,7 +14,7 @@ namespace AdventOfCode19App.Day3
 
         public async Task<string> Run()
         {
-            var resourceName = "AdventOfCode19App.Day3.DataSet.txt";
+            var resourceName = "AdventOfCode19App.Day3.Dataset.txt";
 
             StringBuilder builder = new StringBuilder();
             var directionData = await DataHelper.GetStringTestDataAsync(resourceName, Environment.NewLine);

@@ -9,19 +9,23 @@
     <None Remove="Day2\DataSet.txt" />
     <None Remove="Day3\DataSet.txt" />
     <None Remove="Day5\Dataset.txt" />
+    <None Remove="Day6\Dataset.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Day2\DataSet.txt">
+    <EmbeddedResource Include="Day2\Dataset.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Day3\DataSet.txt">
+    <EmbeddedResource Include="Day3\Dataset.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Day5\DataSet.txt">
+    <EmbeddedResource Include="Day5\Dataset.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Day6\Dataset.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

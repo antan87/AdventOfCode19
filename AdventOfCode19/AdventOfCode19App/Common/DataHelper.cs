@@ -31,14 +31,21 @@ namespace AdventOfCode19App.Common
             }
         }
 
-        public async static IAsyncEnumerable<string> GetStringsTestDataAsync(string resourceNamePath)
+        public async static Task<List<string>> GetStringsTestDataAsync(string resourceNamePath)
         {
+            List<string> values = new List<string>();
             var assembly = Assembly.GetExecutingAssembly();
             using (Stream stream = assembly.GetManifestResourceStream(resourceNamePath))
             using (StreamReader reader = new StreamReader(stream))
             {
-                while (await reader.ReadLineAsync() != null)
-                    yield return await reader.ReadLineAsync();
+                string nextLine = await reader.ReadLineAsync();
+                while (!string.IsNullOrWhiteSpace(nextLine))
+                {
+                    values.Add(nextLine);
+                    nextLine = await reader.ReadLineAsync();
+                }
+
+                return values;
             }
         }
     }

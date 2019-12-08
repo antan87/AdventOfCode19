@@ -7,7 +7,7 @@ namespace XUnitTest.Day5
     public sealed class CalendarDay5Tests
     {
         [Fact]
-        public void CalendarDay2_RunOperation()
+        public void CalendarDay5_GetOutputs()
         {
             var testData = new List<(int[] numbers, int[] expected)>
             {

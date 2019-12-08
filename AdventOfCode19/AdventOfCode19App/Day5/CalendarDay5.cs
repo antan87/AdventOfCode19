@@ -117,7 +117,7 @@ namespace AdventOfCode19App.Day5
 
         public Task<string> Run()
         {
-            var resourceName = "AdventOfCode19App.Day5.DataSet.txt";
+            var resourceName = "AdventOfCode19App.Day5.Dataset.txt";
             var integers = DataHelper.GetIntTestData(resourceName);
             var outputs = GetOutputs(integers);
 
