@@ -46,6 +46,12 @@ namespace AdventOfCode19App.Day5
                         return (2, integerOne);
                     }
 
+                case 5:
+                    {
+                        var integerOne = GetValue(parameters.valueOne, 1, chunk, array);
+                        return (2, integerOne);
+                    }
+
                 default:
                     return (null, null);
             };
