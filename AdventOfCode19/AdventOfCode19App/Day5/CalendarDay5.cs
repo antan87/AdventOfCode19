@@ -2,6 +2,7 @@
 using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AdventOfCode19App.Day5
@@ -12,7 +13,7 @@ namespace AdventOfCode19App.Day5
 
         private static ReadOnlySpan<int> GetChunk(ReadOnlySpan<int> array, int start, int length) => start + length > array.Length ? array.Slice(0, 0) : array.Slice(start, length);
 
-        private static (int? increment, int? output) RunOptcodeAction((int optcode, ParameterMode valueOne, ParameterMode valueTwo) parameters, ReadOnlySpan<int> chunk, Span<int> array)
+        private static (int? index, int? output) RunOptcodeAction(int index, (int optcode, ParameterMode valueOne, ParameterMode valueTwo) parameters, ReadOnlySpan<int> chunk, Span<int> array, int input)
         {
             switch (parameters.optcode)
             {
@@ -22,7 +23,7 @@ namespace AdventOfCode19App.Day5
                         var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array);
                         array[chunk[3]] = integerOne + integerTwo;
 
-                        return (4, null);
+                        return (index + 4, null);
                     }
 
                 case 2:
@@ -30,28 +31,60 @@ namespace AdventOfCode19App.Day5
                         var integerOne = GetValue(parameters.valueOne, 1, chunk, array);
                         var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array);
                         array[chunk[3]] = integerOne * integerTwo;
-                        return (4, null);
+                        return (index + 4, null);
                     }
 
                 case 3:
                     {
-                        var integerTwo = 1;
-                        array[chunk[1]] = integerTwo;
-                        return (2, null);
+                        array[chunk[1]] = input;
+                        return (index + 2, null);
                     }
 
                 case 4:
                     {
                         var integerOne = GetValue(parameters.valueOne, 1, chunk, array);
-                        return (2, integerOne);
+                        return (index + 2, integerOne);
                     }
 
                 case 5:
                     {
                         var integerOne = GetValue(parameters.valueOne, 1, chunk, array);
-                        return (2, integerOne);
+                        if (integerOne == 0)
+                            return (index + 3, null);
+
+                        var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array);
+                        return (integerTwo, null);
                     }
 
+                case 6:
+                    {
+                        var integerOne = GetValue(parameters.valueOne, 1, chunk, array);
+                        if (integerOne != 0)
+                            return (index + 3, null);
+
+                        var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array);
+                        return (integerTwo, null);
+                    }
+
+                case 7:
+                    {
+                        var integerOne = GetValue(parameters.valueOne, 1, chunk, array);
+                        var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array);
+                        int value = integerOne < integerTwo ? 1 : 0;
+
+                        array[chunk[3]] = value;
+                        return (index + 4, null);
+                    }
+
+                case 8:
+                    {
+                        var integerOne = GetValue(parameters.valueOne, 1, chunk, array);
+                        var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array);
+                        int value = integerOne == integerTwo ? 1 : 0;
+
+                        array[chunk[3]] = value;
+                        return (index + 4, null);
+                    }
                 default:
                     return (null, null);
             };
@@ -125,26 +158,34 @@ namespace AdventOfCode19App.Day5
         {
             var resourceName = "AdventOfCode19App.Day5.Dataset.txt";
             var integers = DataHelper.GetIntTestData(resourceName);
-            var outputs = GetOutputs(integers);
+            var outputs = GetOutputs(integers, 1);
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine("Part 1:");
+            builder.AppendLine(string.Join(',', outputs));
+            builder.AppendLine("-------------------------------------------");
 
-            return Task.FromResult(string.Join(',', outputs));
+            builder.AppendLine("Part 2:");
+            integers = DataHelper.GetIntTestData(resourceName);
+            outputs = GetOutputs(integers, 5);
+            builder.AppendLine(string.Join(',', outputs));
+
+            return Task.FromResult(builder.ToString());
         }
 
-        public static IEnumerable<int> GetOutputs(int[] integers)
+        public static IEnumerable<int> GetOutputs(int[] integers, int input)
         {
-            int? increase = 0;
-            for (int index = 0; index < integers.Length; index += increase.Value)
+            for (int index = 0; index < integers.Length;)
             {
                 ReadOnlySpan<int> chunk = GetChunk(integers.AsSpan(), index, 4);
                 if (chunk.Length == 0)
                     break;
 
                 var parameters = GetInstructions(chunk[0]);
-                var response = RunOptcodeAction(parameters, chunk, integers.AsSpan());
-                if (!response.increment.HasValue)
+                var response = RunOptcodeAction(index, parameters, chunk, integers.AsSpan(), input);
+                if (!response.index.HasValue)
                     break;
 
-                increase = response.increment.Value;
+                index = response.index.Value;
                 if (response.output.HasValue)
                     yield return response.output.Value;
             }
