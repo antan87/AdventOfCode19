@@ -2,7 +2,6 @@
 using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AdventOfCode19App.Day7
@@ -158,21 +157,21 @@ namespace AdventOfCode19App.Day7
         {
             var resourceName = "AdventOfCode19App.Day7.Dataset.txt";
             var integers = DataHelper.GetIntTestData(resourceName);
-            var outputs = GetOutputs(integers, 1);
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine("Part 1:");
-            builder.AppendLine(string.Join(',', outputs));
-            builder.AppendLine("-------------------------------------------");
 
-            builder.AppendLine("Part 2:");
-            integers = DataHelper.GetIntTestData(resourceName);
-            outputs = GetOutputs(integers, 5);
-            builder.AppendLine(string.Join(',', outputs));
+            Dictionary<string, List<(int setting, int input, int output)>> values = new Dictionary<string, List<(int setting, int input, int output)>>();
+            for (int setting = 0; setting <= 4; setting++)
+            {
+                int output = GetOutput((int[])integers.Clone(), setting, 0).Value;
+                if (!values.ContainsKey("A"))
+                    values["A"] = new List<(int setting, int input, int output)>();
 
-            return Task.FromResult(builder.ToString());
+                values["A"].Add((setting, 0, output));
+            }
+
+            return Task.FromResult(string.Empty);
         }
 
-        public static IEnumerable<int> GetOutputs(int[] integers, int input)
+        public static int? GetOutput(int[] integers, int setting, int input)
         {
             for (int index = 0; index < integers.Length;)
             {
@@ -181,14 +180,20 @@ namespace AdventOfCode19App.Day7
                     break;
 
                 var parameters = GetInstructions(chunk[0]);
-                var response = RunOptcodeAction(index, parameters, chunk, integers.AsSpan(), input);
+                var inputArg = input;
+                if (index == 0)
+                    inputArg = setting;
+
+                var response = RunOptcodeAction(index, parameters, chunk, integers.AsSpan(), inputArg);
                 if (!response.index.HasValue)
                     break;
 
                 index = response.index.Value;
                 if (response.output.HasValue)
-                    yield return response.output.Value;
+                    return response.output.Value;
             }
+
+            return null;
         }
     }
 

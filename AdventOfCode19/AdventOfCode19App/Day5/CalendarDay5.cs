@@ -158,15 +158,14 @@ namespace AdventOfCode19App.Day5
         {
             var resourceName = "AdventOfCode19App.Day5.Dataset.txt";
             var integers = DataHelper.GetIntTestData(resourceName);
-            var outputs = GetOutputs(integers, 1);
+            var outputs = GetOutputs((int[])integers.Clone(), 1);
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("Part 1:");
             builder.AppendLine(string.Join(',', outputs));
             builder.AppendLine("-------------------------------------------");
 
             builder.AppendLine("Part 2:");
-            integers = DataHelper.GetIntTestData(resourceName);
-            outputs = GetOutputs(integers, 5);
+            outputs = GetOutputs((int[])integers.Clone(), 5);
             builder.AppendLine(string.Join(',', outputs));
 
             return Task.FromResult(builder.ToString());
@@ -176,12 +175,12 @@ namespace AdventOfCode19App.Day5
         {
             for (int index = 0; index < integers.Length;)
             {
-                ReadOnlySpan<int> chunk = GetChunk(integers.AsSpan(), index, 4);
+                ReadOnlySpan<int> chunk = GetChunk(integers, index, 4);
                 if (chunk.Length == 0)
                     break;
 
                 var parameters = GetInstructions(chunk[0]);
-                var response = RunOptcodeAction(index, parameters, chunk, integers.AsSpan(), input);
+                var response = RunOptcodeAction(index, parameters, chunk, integers, input);
                 if (!response.index.HasValue)
                     break;
 
