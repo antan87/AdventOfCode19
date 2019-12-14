@@ -13,30 +13,56 @@ namespace AdventOfCode19App.Day8
 
         public async Task<string> Run()
         {
-            var resourceName = "AdventOfCode19App.Day8.Dataset.txt";
+            string resourceName = "AdventOfCode19App.Day8.Dataset.txt";
             var strings = await DataHelper.GetStringTestDataAsync(resourceName);
-            var integers = IntegerHelper.StringToIntIEnumerable(strings);
-            var layers = GetLayers(integers.ToArray(), 12, 25);
+            IEnumerable<int> integers = IntegerHelper.StringToIntIEnumerable(strings);
+            var array = ToMultiDimensionalArray(integers.ToArray(), 25);
+            (int min, IEnumerable<int> numbers) minGroup = GetLayerWithMinNumber(array, 0, array.GetLength(0) / 6, 25);
 
-            return "Test";
+            var countOneNumbers = minGroup.numbers.Where(x => x == 1).Count();
+            var countTwoNumbers = minGroup.numbers.Where(x => x == 2).Count();
+
+            return Convert.ToString(countOneNumbers * countTwoNumbers);
         }
 
-        private static IEnumerable<int> GetLayerNumbers (ReadOnlySpan<int[,]> layers, int rowIndex, int layerHeight, int layerWidth)
+        public static (int min, IEnumerable<int> numbers) GetLayerWithMinNumber(int[,] layers, int number, int layerHeight, int layerWidht)
         {
-          var layer =  layers.Slice(rowIndex, 2);
-           
+            (int min, IEnumerable<int> numbers) minGroup = (int.MaxValue, new List<int>());
+            for (int y = 0; y < layers.GetLength(0); y += layerHeight)
+            {
+                var numbers = GetLayerNumbers(layers, y, layerHeight, layerWidht);
+                var count = numbers.Where(value => value == number).Count();
+                if (minGroup.min > count)
+                    minGroup = (count, numbers);
+            }
+
+            return minGroup;
         }
 
-        private static int[,] GetLayers(int[] integers, int rows, int columns)
+        private static IEnumerable<int> GetLayerNumbers(int[,] layers, int rowIndex, int layerHeight, int layerWidth)
+        {
+            List<int> numbers = new List<int>();
+            for (int y = rowIndex; y < rowIndex + layerHeight; y++)
+                for (int x = 0; x < layerWidth; x++)
+                    numbers.Add(layers[y, x]);
+
+            return numbers;
+        }
+
+        public static int[,] ToMultiDimensionalArray(IEnumerable<int> integers, int numberOfColumns) => ToMultiDimensionalArray(integers.ToArray(), integers.Count() / numberOfColumns, numberOfColumns);
+
+        private static int[,] ToMultiDimensionalArray(int[] integers, int rows, int columns)
         {
             int[,] layers = new int[rows, columns];
             int index = 0;
             for (int row = 0; row < rows; row++)
+            {
                 for (int column = 0; column < columns; column++)
                 {
                     layers[row, column] = integers[index];
                     index++;
                 }
+            }
 
             return layers;
         }

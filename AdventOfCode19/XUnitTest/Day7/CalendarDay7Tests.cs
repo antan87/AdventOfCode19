@@ -18,9 +18,9 @@
 
 //            foreach (var data in testData)
 //            {
-//                var outputs = CalendarDay7.GetOutputs(data.numbers, data.input);
+//                var output = CalendarDay7.GetOutput(data.numbers, data.input);
 
-//                Assert.Equal(data.expected, outputs);
+//                Assert.Equal(data.expected, output);
 //            }
 //        }
 //    }

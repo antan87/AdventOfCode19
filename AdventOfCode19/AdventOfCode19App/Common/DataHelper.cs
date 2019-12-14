@@ -51,16 +51,19 @@ namespace AdventOfCode19App.Common
 
         public async static Task<string> GetStringTestDataAsync(string resourceNamePath)
         {
-            List<string> values = new List<string>();
+            string output = string.Empty;
             var assembly = Assembly.GetExecutingAssembly();
             using (Stream stream = assembly.GetManifestResourceStream(resourceNamePath))
             using (StreamReader reader = new StreamReader(stream))
             {
                 string nextLine = await reader.ReadLineAsync();
-                if (!string.IsNullOrWhiteSpace(nextLine))
-                    return nextLine;
+                while (!string.IsNullOrWhiteSpace(nextLine))
+                {
+                    output += nextLine;
+                    nextLine = await reader.ReadLineAsync();
+                }
 
-                return string.Empty;
+                return output;
             }
         }
     }
