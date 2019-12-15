@@ -48,5 +48,23 @@ namespace AdventOfCode19App.Common
                 return values;
             }
         }
+
+        public async static Task<string> GetStringTestDataAsync(string resourceNamePath)
+        {
+            string output = string.Empty;
+            var assembly = Assembly.GetExecutingAssembly();
+            using (Stream stream = assembly.GetManifestResourceStream(resourceNamePath))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                string nextLine = await reader.ReadLineAsync();
+                while (!string.IsNullOrWhiteSpace(nextLine))
+                {
+                    output += nextLine;
+                    nextLine = await reader.ReadLineAsync();
+                }
+
+                return output;
+            }
+        }
     }
 }

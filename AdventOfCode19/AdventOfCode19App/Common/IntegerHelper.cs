@@ -18,5 +18,19 @@ namespace AdventOfCode19App.Common
 
             return Int32.Parse(digitText);
         }
+
+        public static int CharToInt(char value) => Convert.ToInt32(value);
+
+        public static IEnumerable<int> StringToIntIEnumerable(string value)
+        {
+            foreach (var stringValue in StringToIEnumerable(value))
+                yield return Convert.ToInt32(stringValue);
+
+            static IEnumerable<string> StringToIEnumerable(string stringValue)
+            {
+                for (var index = 0; index < stringValue.Length; index++)
+                    yield return Convert.ToString(stringValue[index]);
+            }
+        }
     }
 }
