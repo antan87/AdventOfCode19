@@ -3,6 +3,7 @@ using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AdventOfCode19App.Day8
@@ -16,13 +17,61 @@ namespace AdventOfCode19App.Day8
             string resourceName = "AdventOfCode19App.Day8.Dataset.txt";
             var strings = await DataHelper.GetStringTestDataAsync(resourceName);
             IEnumerable<int> integers = IntegerHelper.StringToIntIEnumerable(strings);
-            var array = ToMultiDimensionalArray(integers.ToArray(), 25);
+            int[,] array = ToMultiDimensionalArray(integers.ToArray(), 25);
             (int min, IEnumerable<int> numbers) minGroup = GetLayerWithMinNumber(array, 0, array.GetLength(0) / 6, 25);
 
             var countOneNumbers = minGroup.numbers.Where(x => x == 1).Count();
             var countTwoNumbers = minGroup.numbers.Where(x => x == 2).Count();
 
+            //var mew = GetMinValuesForNumber(integers.ToArray());
+            //var countOneNumbers2 = mew.Where(x => x == 1).Count();
+            //var countTwoNumbers2 = mew.Where(x => x == 2).Count();
+
             return Convert.ToString(countOneNumbers * countTwoNumbers);
+        }
+
+        private string GetImage(int[,] array)
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int row = 0; row < array.GetLength(0); row++)
+            {
+                builder.AppendLine();
+                for (int column = 0; column < array.GetLength(1); column++)
+                {
+                    int pixel = array[row, column];
+                    if (pixel == 0)
+                        builder.Append("0");
+                    else if (pixel == 1)
+                        builder.Append("1");
+                    else if (pixel == 2)
+                        builder.Append("2");
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        private static int[] GetMinValuesForNumber(int[] integers)
+        {
+            int[] minValues = null;
+            int count = int.MaxValue;
+            for (int index = 0; index < integers.Count(); index += 2500)
+            {
+                var layer = GetLayer(integers, index, 2500);
+                int layerCount = layer.ToArray().Where(x => x == 0).Count();
+                if (count > layerCount)
+                {
+                    count = layerCount;
+                    minValues = layer.ToArray();
+                }
+            }
+
+            return minValues;
+
+            static Span<int> GetLayer(Span<int> integers, int index, int length)
+            {
+                return integers.Slice(index, length);
+            }
         }
 
         public static (int min, IEnumerable<int> numbers) GetLayerWithMinNumber(int[,] layers, int number, int layerHeight, int layerWidht)
