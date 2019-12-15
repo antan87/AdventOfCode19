@@ -2,6 +2,8 @@
 using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AdventOfCode19App.Day7
@@ -157,18 +159,13 @@ namespace AdventOfCode19App.Day7
         {
             var resourceName = "AdventOfCode19App.Day7.Dataset.txt";
             var integers = DataHelper.GetIntTestData(resourceName);
+            var settings = new List<int> { 0, 1, 2, 3, 4 };
+            var maxOutput = GetMaxOutput(integers, settings, 0);
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"Max output: {maxOutput.output}");
+            builder.AppendLine($"Settings: {string.Join(',', maxOutput.settings)}");
 
-            Dictionary<string, List<(int setting, int input, int output)>> values = new Dictionary<string, List<(int setting, int input, int output)>>();
-            for (int setting = 0; setting <= 4; setting++)
-            {
-                int output = GetOutput((int[])integers.Clone(), setting, 0).Value;
-                if (!values.ContainsKey("A"))
-                    values["A"] = new List<(int setting, int input, int output)>();
-
-                values["A"].Add((setting, 0, output));
-            }
-
-            return Task.FromResult(string.Empty);
+            return Task.FromResult(builder.ToString());
         }
 
         public static int? GetOutput(int[] integers, int setting, int input)
@@ -194,6 +191,32 @@ namespace AdventOfCode19App.Day7
             }
 
             return null;
+        }
+
+        public static (int output, List<int> settings) GetMaxOutput(int[] integers, IEnumerable<int> settings, int input)
+        {
+            (int output, List<int> settings)? maxOutput = null;
+            foreach (int setting in settings)
+            {
+                int? output = GetOutput((int[])integers.Clone(), setting, input);
+                if (!output.HasValue)
+                    return (0, new List<int>());
+
+                var notUsedSettings = settings.Where(x => x != setting);
+                if (notUsedSettings.Any())
+                {
+                    var tempOutput = GetMaxOutput((int[])integers.Clone(), notUsedSettings, output.Value);
+                    if (!maxOutput.HasValue || maxOutput.Value.output < tempOutput.output)
+                    {
+                        maxOutput = tempOutput;
+                        maxOutput.Value.settings.Add(setting);
+                    }
+                }
+                else
+                    return maxOutput.HasValue ? maxOutput.Value : (output.Value, new List<int> { setting });
+            }
+
+            return maxOutput.Value;
         }
     }
 
