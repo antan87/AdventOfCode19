@@ -2,14 +2,15 @@
 using AdventOfCode19App.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AdventOfCode19App.Day5
+namespace AdventOfCode19App.Day7
 {
-    public sealed class CalendarDay5 : ICalenderDay
+    public sealed class CalendarDay7 : ICalenderDay
     {
-        public string Header() => "--- Day 5: Sunny with a Chance of Asteroids ---";
+        public string Header() => "--- Day 7: Amplification Circuit ---";
 
         private static ReadOnlySpan<int> GetChunk(ReadOnlySpan<int> array, int start, int length) => start + length > array.Length ? array.Slice(0, 0) : array.Slice(start, length);
 
@@ -156,38 +157,66 @@ namespace AdventOfCode19App.Day5
 
         public Task<string> Run()
         {
-            var resourceName = "AdventOfCode19App.Day5.Dataset.txt";
+            var resourceName = "AdventOfCode19App.Day7.Dataset.txt";
             var integers = DataHelper.GetIntTestData(resourceName);
-            var outputs = GetOutputs((int[])integers.Clone(), 1);
+            var settings = new List<int> { 0, 1, 2, 3, 4 };
+            var maxOutput = GetMaxOutput(integers, settings, 0);
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine("Part 1:");
-            builder.AppendLine(string.Join(',', outputs));
-            builder.AppendLine("-------------------------------------------");
-
-            builder.AppendLine("Part 2:");
-            outputs = GetOutputs((int[])integers.Clone(), 5);
-            builder.AppendLine(string.Join(',', outputs));
+            builder.AppendLine($"Max output: {maxOutput.output}");
+            builder.AppendLine($"Settings: {string.Join(',', maxOutput.settings)}");
 
             return Task.FromResult(builder.ToString());
         }
 
-        public static IEnumerable<int> GetOutputs(int[] integers, int input)
+        public static int? GetOutput(int[] integers, int setting, int input)
         {
             for (int index = 0; index < integers.Length;)
             {
-                ReadOnlySpan<int> chunk = GetChunk(integers, index, 4);
+                ReadOnlySpan<int> chunk = GetChunk(integers.AsSpan(), index, 4);
                 if (chunk.Length == 0)
                     break;
 
                 var parameters = GetInstructions(chunk[0]);
-                var response = RunOptcodeAction(index, parameters, chunk, integers, input);
+                var inputArg = input;
+                if (index == 0)
+                    inputArg = setting;
+
+                var response = RunOptcodeAction(index, parameters, chunk, integers.AsSpan(), inputArg);
                 if (!response.index.HasValue)
                     break;
 
                 index = response.index.Value;
                 if (response.output.HasValue)
-                    yield return response.output.Value;
+                    return response.output.Value;
             }
+
+            return null;
+        }
+
+        public static (int output, List<int> settings) GetMaxOutput(int[] integers, IEnumerable<int> settings, int input)
+        {
+            (int output, List<int> settings)? maxOutput = null;
+            foreach (int setting in settings)
+            {
+                int? output = GetOutput((int[])integers.Clone(), setting, input);
+                if (!output.HasValue)
+                    return (0, new List<int>());
+
+                var notUsedSettings = settings.Where(x => x != setting);
+                if (notUsedSettings.Any())
+                {
+                    var tempOutput = GetMaxOutput((int[])integers.Clone(), notUsedSettings, output.Value);
+                    if (!maxOutput.HasValue || maxOutput.Value.output < tempOutput.output)
+                    {
+                        maxOutput = tempOutput;
+                        maxOutput.Value.settings.Add(setting);
+                    }
+                }
+                else
+                    return maxOutput.HasValue ? maxOutput.Value : (output.Value, new List<int> { setting });
+            }
+
+            return maxOutput.Value;
         }
     }
 
