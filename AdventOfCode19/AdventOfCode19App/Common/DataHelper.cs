@@ -20,6 +20,13 @@ namespace AdventOfCode19App.Common
             }
         }
 
+        public async static Task<long[]> GetLongTestData(string resourceNamePath)
+        {
+            var stringText = await GetStringTestDataAsync(resourceNamePath);
+
+            return stringText.Split(',').Select(value => LongHelper.StringToLong(value)).ToArray();
+        }
+
         public static async Task<string[]> GetStringTestDataAsync(string resourceNamePath, string splitCharacter)
         {
             var assembly = Assembly.GetExecutingAssembly();
