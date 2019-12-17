@@ -15,8 +15,8 @@ namespace AdventOfCode19App.Day10
             string resourceName = "AdventOfCode19App.Day10.Dataset.txt";
             List<string> input = await DataHelper.GetStringsTestDataAsync(resourceName);
             string[,] grid = GetMeteoritGrid(input);
-
-            return string.Empty;
+            (int x, int y, int count) bestMonitorStation = GetMonitoringStation(grid);
+            return $"Best monitor station is at x: {bestMonitorStation.x} y: {bestMonitorStation.y} Count: {bestMonitorStation.count}";
         }
 
         public static string[,] GetMeteoritGrid(List<string> input)
@@ -52,9 +52,50 @@ namespace AdventOfCode19App.Day10
             }
         }
 
-        public static ((int x, int y) coordinate, int count) GetMonitoringStation(int[,] asteroids)
+        public static (int x, int y, int count) GetMonitoringStation(string[,] asteroids)
         {
-            return ((0, 0), 0);
+            List<(int x, int y)> metroits = new List<(int x, int y)>();
+            for (int row = 0; row < asteroids.GetLength(0); row++)
+                for (int column = 0; column < asteroids.GetLength(1); column++)
+                {
+                    {
+                        if (asteroids[row, column] == "#")
+                            metroits.Add((column, row));
+                    }
+                }
+
+            (int x, int y, int count) maxValue = (0, 0, 0);
+            foreach ((int x, int y) metroit in metroits)
+            {
+                int count = GetMetroitViewCount(metroit, metroits.Except(new List<(int x, int y)> { metroit }));
+                if (maxValue.count < count)
+                    maxValue = (metroit.x, metroit.y, count);
+            }
+
+            return maxValue;
+        }
+
+        private static int GetMetroitViewCount((int x, int y) metorit, IEnumerable<(int x, int y)> metroits)
+        {
+            var slopes = new List<(int x, int y, decimal slope)>();
+            foreach (var nextMetroit in metroits)
+            {
+                int xValue = nextMetroit.x - metorit.x;
+                decimal slope = 0;
+                if (xValue != 0)
+                    slope = (decimal)(nextMetroit.y - metorit.y) / (nextMetroit.x - metorit.x);
+                else
+                    slope = nextMetroit.y - metorit.y < 0 ? decimal.MinValue : decimal.MaxValue;
+
+                slopes.Add((nextMetroit.x, nextMetroit.y, slope));
+            }
+            int counter = 0;
+            foreach (var slopeGroup in slopes.GroupBy(met => met.slope))
+            {
+                counter++;
+            }
+
+            return counter;
         }
     }
 }

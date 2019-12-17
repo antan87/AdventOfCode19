@@ -30,5 +30,25 @@ namespace XUnitTest.Day10
 
             Assert.Equal(expected, grid);
         }
+
+        [Fact]
+        public void CalendarDay10_GetMonitoringStation()
+        {
+            List<string> input = new List<string>
+            {
+                ".#..#",
+                ".....",
+                "#####",
+                "....#",
+                "...##"
+            };
+
+            string[,] grid = CalendarDay10.GetMeteoritGrid(input);
+            var station = CalendarDay10.GetMonitoringStation(grid);
+
+            Assert.Equal(8, station.count);
+            Assert.Equal(3, station.x);
+            Assert.Equal(4, station.y);
+        }
     }
 }
