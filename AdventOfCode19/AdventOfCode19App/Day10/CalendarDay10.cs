@@ -92,7 +92,25 @@ namespace AdventOfCode19App.Day10
             int counter = 0;
             foreach (var slopeGroup in slopes.GroupBy(met => met.slope))
             {
-                counter++;
+                if (slopeGroup.Any(otherMetroit => otherMetroit.x == metorit.x && otherMetroit.y > metorit.y))
+                    counter++;
+                if (slopeGroup.Any(otherMetroit => otherMetroit.x == metorit.x && otherMetroit.y < metorit.y))
+                    counter++;
+
+                if (slopeGroup.Any(otherMetroit => otherMetroit.y == metorit.y && otherMetroit.x > metorit.x))
+                    counter++;
+                if (slopeGroup.Any(otherMetroit => otherMetroit.y == metorit.y && otherMetroit.x < metorit.x))
+                    counter++;
+
+                if (slopeGroup.Any(otherMetroit => otherMetroit.y < metorit.y && otherMetroit.x < metorit.x))
+                    counter++;
+                if (slopeGroup.Any(otherMetroit => otherMetroit.y < metorit.y && otherMetroit.x > metorit.x))
+                    counter++;
+
+                if (slopeGroup.Any(otherMetroit => otherMetroit.y > metorit.y && otherMetroit.x > metorit.x))
+                    counter++;
+                if (slopeGroup.Any(otherMetroit => otherMetroit.y > metorit.y && otherMetroit.x < metorit.x))
+                    counter++;
             }
 
             return counter;
