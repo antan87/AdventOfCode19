@@ -1,7 +1,9 @@
 ﻿using AdventOfCode19App.Common;
 using AdventOfCode19App.Interface;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +15,7 @@ namespace AdventOfCode19App.Day9
 
         private static ReadOnlySpan<long> GetChunk(ReadOnlySpan<long> array, long start, int length) => start + length > array.Length ? array.Slice(0, 0) : array.Slice(Convert.ToInt32(start), length);
 
-        private static (long? index, long? output, long? relativeBase) RunOptcodeAction(long index, (long optcode, ParameterMode valueOne, ParameterMode valueTwo, ParameterMode valueThree) parameters, ReadOnlySpan<long> chunk, Span<long> array, int? input, long relativeBase)
+        private static (long? index, long? output, long? relativeBase) RunOptcodeAction(long index, (long optcode, ParameterMode valueOne, ParameterMode valueTwo, ParameterMode valueThree) parameters, ReadOnlySpan<long> chunk, ref long[] array, int? input, long relativeBase)
         {
             try
             {
@@ -23,7 +25,8 @@ namespace AdventOfCode19App.Day9
                         {
                             var integerOne = GetValue(parameters.valueOne, 1, chunk, array, relativeBase);
                             var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array, relativeBase);
-                            array[GetPosition(parameters.valueThree, 3, chunk, array, relativeBase)] = integerOne + integerTwo;
+                            int positionCase1 = GetPosition(parameters.valueThree, 3, chunk, array, relativeBase);
+                            SetValueToArray(ref array, positionCase1, integerOne + integerTwo);
 
                             return (index + 4, null, relativeBase);
                         }
@@ -32,7 +35,8 @@ namespace AdventOfCode19App.Day9
                         {
                             var integerOne = GetValue(parameters.valueOne, 1, chunk, array, relativeBase);
                             var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array, relativeBase);
-                            array[GetPosition(parameters.valueThree, 3, chunk, array, relativeBase)] = integerOne * integerTwo;
+                            int positionCase2 = GetPosition(parameters.valueThree, 3, chunk, array, relativeBase);
+                            SetValueToArray(ref array, positionCase2, integerOne * integerTwo);
                             return (index + 4, null, relativeBase);
                         }
 
@@ -41,7 +45,8 @@ namespace AdventOfCode19App.Day9
                             if (!input.HasValue)
                                 throw new Exception($"Input is not set.");
 
-                            array[GetPosition(parameters.valueOne, 1, chunk, array, relativeBase)] = input.Value;
+                            int positionCase3 = GetPosition(parameters.valueOne, 1, chunk, array, relativeBase);
+                            SetValueToArray(ref array, positionCase3, input.Value);
                             return (index + 2, null, relativeBase);
                         }
 
@@ -77,7 +82,8 @@ namespace AdventOfCode19App.Day9
                             var integerTwo = GetValue(parameters.valueTwo, 2, chunk, array, relativeBase);
                             int value = integerOne < integerTwo ? 1 : 0;
 
-                            array[GetPosition(parameters.valueThree, 3, chunk, array, relativeBase)] = value;
+                            var positionCase7 = GetPosition(parameters.valueThree, 3, chunk, array, relativeBase);
+                            SetValueToArray(ref array, positionCase7, value);
                             return (index + 4, null, relativeBase);
                         }
 
@@ -135,12 +141,13 @@ namespace AdventOfCode19App.Day9
 
                 case ParameterMode.Relative:
                     var value = chunk[Convert.ToInt32(index)];
-                    var newIndex = relativeBase + value;
+                    var newIndex = Convert.ToInt32(relativeBase + value);
 
-                    return array[Convert.ToInt32(newIndex)];
+                    return GetValueFromArray(ref array, newIndex);
 
                 default:
-                    return array[Convert.ToInt32(chunk[Convert.ToInt32(index)])];
+                    var newIndex2 = Convert.ToInt32(chunk[Convert.ToInt32(index)]);
+                    return GetValueFromArray(ref array, newIndex2);
             }
         }
 
@@ -224,6 +231,21 @@ namespace AdventOfCode19App.Day9
             }
         }
 
+        private static long GetValueFromArray(ref Span<long> array, int index)
+        {
+            if (index >= array.Length)
+            {
+                List<long> temp = array.ToArray().ToList();
+
+                while (index > temp.Count() - 1)
+                    temp.Add(0);
+
+                array = temp.ToArray();
+            }
+
+            return array[index];
+        }
+
         public async Task<string> Run()
         {
             var resourceName = "AdventOfCode19App.Day9.Dataset.txt";
@@ -231,6 +253,9 @@ namespace AdventOfCode19App.Day9
             StringBuilder builder = new StringBuilder();
             var output = GetOutput((long[])integers.Clone(), 1);
             builder.AppendLine($"Part 1 with input value 1: {output.GetValueOrDefault(0)}");
+
+            output = GetOutput((long[])integers.Clone(), 2);
+            builder.AppendLine($"Part 2 with input value 1: {output.GetValueOrDefault(0)}");
 
             return builder.ToString();
         }
@@ -247,7 +272,7 @@ namespace AdventOfCode19App.Day9
 
                 var parameters = GetInstructions(chunk[0]);
                 var inputArg = input;
-                var response = RunOptcodeAction(index, parameters, chunk, integers.AsSpan(), inputArg, relativeBase);
+                var response = RunOptcodeAction(index, parameters, chunk, ref integers, inputArg, relativeBase);
                 if (!response.index.HasValue)
                     break;
 
@@ -261,6 +286,21 @@ namespace AdventOfCode19App.Day9
             }
 
             return null;
+        }
+
+        private static long SetValueToArray(ref long[] array, int index, long value)
+        {
+            if (index >= array.Length)
+            {
+                List<long> temp = array.ToArray().ToList();
+
+                while (index > temp.Count() - 1)
+                    temp.Add(0);
+
+                array = temp.ToArray();
+            }
+
+            return array[index] = value;
         }
     }
 
